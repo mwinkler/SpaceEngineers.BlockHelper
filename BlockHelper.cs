@@ -251,14 +251,14 @@ public class BlockHelper
 
     #region Motor
 
-    public static bool IsMotorAtUpperLimit(IMyTerminalBlock block)
+    public static bool IsMotorReachedUpperLimit(IMyTerminalBlock block)
     {
         var rotor = AsMotorStator(block);
 
         return (GetMotorPosition(block) >= rotor.UpperLimit * 180 / Math.PI);
     }
 
-    public static bool IsMotorAtLowerLimit(IMyTerminalBlock block)
+    public static bool IsMotorReachedLowerLimit(IMyTerminalBlock block)
     {
         var rotor = AsMotorStator(block);
 

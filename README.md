@@ -108,8 +108,8 @@ IsNotWorking(IMyTerminalBlock): bool
 IsPiston(IMyTerminalBlock): bool 
 IsPistonContracted(IMyTerminalBlock): bool 
 IsPistonExpanded(IMyTerminalBlock): bool 
-IsMotorAtUpperLimit(IMyTerminalBlock): bool 
-IsMotorAtLowerLimit(IMyTerminalBlock): bool 
+IsMotorReachedUpperLimit(IMyTerminalBlock): bool 
+IsMotorReachedLowerLimit(IMyTerminalBlock): bool 
 IsSensor(IMyTerminalBlock): bool 
 IsSensorActive(IMyTerminalBlock): bool 
 IsWorking(IMyTerminalBlock): bool
