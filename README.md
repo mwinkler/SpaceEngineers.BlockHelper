@@ -1,7 +1,7 @@
 SpaceEngineers.BlockHelper (WIP)
 ================================
 
-The block helper class allow you to write more expressiv and compact code for Space Engineers programming block.
+The block helper class allow you to write more expressiv and compact code for Space Engineers programming BlockHelper.
 It contains methods for finding blocks, executing actions, get properties, check constrains and more.
 
 The methods are group by:
@@ -22,25 +22,25 @@ Some usage examples:
 ```csharp
     void Main()
     {
-        var block = new BlockHelper(GridTerminalSystem);
+        BlockHelper.Init(GridTerminalSystem);
 
 
 
         // get all lights
-        var lights = block.FindBlocksOfType<IMyLightingBlock>();
+        var lights = BlockHelper.FindBlocksOfType<IMyLightingBlock>();
 
         // is any light on
-        if (block.Any(lights, block.IsWorking))
+        if (BlockHelper.Any(lights, BlockHelper.IsWorking))
         {
             // turn all lights off
-            block.ForEach(lights, block.DoTurnOff);
+            BlockHelper.ForEach(lights, BlockHelper.DoTurnOff);
         }
 
 
 
 
         // get all lights witch are turned off
-        var offLights = block.FindBlocksOfType<IMyLightingBlock>(block.IsNotWorking);
+        var offLights = BlockHelper.FindBlocksOfType<IMyLightingBlock>(BlockHelper.IsNotWorking);
 
 
 
@@ -48,8 +48,8 @@ Some usage examples:
         // reverse if piston is fully expanded
         var piston = GridTerminalSystem.GetBlockWithName("Piston");
 
-        if (block.IsPistonExpanded(piston))
-            block.DoReverse(piston);
+        if (BlockHelper.IsPistonExpanded(piston))
+            BlockHelper.DoReverse(piston);
 
 
 
@@ -57,14 +57,14 @@ Some usage examples:
         // stop rotor if exceed specific angle
         var rotor = GridTerminalSystem.GetBlockWithName("Rotor");
 
-        if (block.GetRotorPosition(rotor) > 90)
-            block.DoTurnOff(rotor);
+        if (BlockHelper.GetRotorPosition(rotor) > 90)
+            BlockHelper.DoTurnOff(rotor);
 
 
 
             
         // get all being hacked blocks
-        var hackingBlocks = block.Where(GridTerminalSystem.Blocks, block.IsBeingHacked);
+        var hackingBlocks = BlockHelper.Where(GridTerminalSystem.Blocks, BlockHelper.IsBeingHacked);
 
     }
 ```
