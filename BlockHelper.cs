@@ -7,7 +7,7 @@ public class BlockHelper
     private readonly string _debugBlockName;
     private readonly IMyTerminalBlock _debugBlock;
     private readonly System.Text.RegularExpressions.Regex _infoPistionPosition = new System.Text.RegularExpressions.Regex(@"(\d+.\d+)m");
-    private readonly System.Text.RegularExpressions.Regex _infoRotorPosition = new System.Text.RegularExpressions.Regex(@"(\d+)°");
+    private readonly System.Text.RegularExpressions.Regex _infoMotorPosition = new System.Text.RegularExpressions.Regex(@"(-?\d+)°");
 
     #endregion
 
@@ -88,7 +88,7 @@ public class BlockHelper
     {
         if (_debugBlock == null)
             throw new Exception("Deubg block was not found! You have to specifiy the debug block name when you initialize the block helper");
-            
+
         _debugBlock.SetCustomName(_debugBlock.CustomName + "\n\r" + string.Format(text, args));
     }
 
@@ -242,6 +242,23 @@ public class BlockHelper
 
     #endregion
 
+    #region Motor
+
+    public bool IsMotorAtUpperLimit(IMyTerminalBlock block)
+    {
+        var rotor = AsMotorStator(block);
+
+        return (GetMotorPosition(block) >= rotor.UpperLimit * 180 / Math.PI);
+    }
+
+    public bool IsMotorAtLowerLimit(IMyTerminalBlock block)
+    {
+        var rotor = AsMotorStator(block);
+
+        return (GetMotorPosition(block) <= rotor.LowerLimit * 180 / Math.PI);
+    }
+
+    #endregion
 
     #endregion
 
@@ -252,9 +269,9 @@ public class BlockHelper
         return TryExtractFloat(block.DetailedInfo, _infoPistionPosition);
     }
 
-    public float? GetRotorPosition(IMyTerminalBlock block)
+    public float? GetMotorPosition(IMyTerminalBlock block)
     {
-        return TryExtractFloat(block.DetailedInfo, _infoRotorPosition);
+        return TryExtractFloat(block.DetailedInfo, _infoMotorPosition);
     }
 
     #endregion
@@ -316,5 +333,4 @@ public class BlockHelper
     }
 
     #endregion
-} 
-
+}
