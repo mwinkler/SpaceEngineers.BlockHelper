@@ -191,6 +191,7 @@ public class BlockHelper
     {
         var piston = AsPiston(block);
 
+        // have to use '.ToString()' because the rounded value don't exactly match to the ui value
         return (Math.Round(piston.MaxLimit, 1).ToString() == GetPistonPosition(block).ToString());
     }
 
@@ -198,6 +199,7 @@ public class BlockHelper
     {
         var piston = AsPiston(block);
 
+        // have to use '.ToString()' because the rounded value don't exactly match to the ui value
         return (Math.Round(piston.MinLimit, 1).ToString() == GetPistonPosition(block).ToString());
     }
 
