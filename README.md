@@ -95,7 +95,7 @@ DoTurnOff(IMyTerminalBlock)
 DoTurnOn(IMyTerminalBlock) 
 
 GetPistonPosition(IMyTerminalBlock): float? 
-GetRotorPosition(IMyTerminalBlock): float? 
+GetMotorPosition(IMyTerminalBlock): float? 
 
 IsBeingHacked(IMyTerminalBlock): bool 
 IsFunctional(IMyTerminalBlock): bool 
@@ -108,6 +108,8 @@ IsNotWorking(IMyTerminalBlock): bool
 IsPiston(IMyTerminalBlock): bool 
 IsPistonContracted(IMyTerminalBlock): bool 
 IsPistonExpanded(IMyTerminalBlock): bool 
+IsMotorAtUpperLimit(IMyTerminalBlock): bool 
+IsMotorAtLowerLimit(IMyTerminalBlock): bool 
 IsSensor(IMyTerminalBlock): bool 
 IsSensorActive(IMyTerminalBlock): bool 
 IsWorking(IMyTerminalBlock): bool
