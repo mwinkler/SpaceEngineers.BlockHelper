@@ -3,324 +3,323 @@ using System.Collections.Generic;
 //using System.Linq;
 using Sandbox.ModAPI.Ingame;
 
-namespace BlockHelper
+
+public class BlockHelper
 {
-    public class BlockHelper
+    #region Members
+
+    private readonly IMyGridTerminalSystem _gts;
+    private readonly string _debugBlockName;
+    private readonly IMyTerminalBlock _debugBlock;
+    private readonly System.Text.RegularExpressions.Regex _infoPistionPosition = new System.Text.RegularExpressions.Regex(@"(\d+.\d+)m");
+    private readonly System.Text.RegularExpressions.Regex _infoRotorPosition = new System.Text.RegularExpressions.Regex(@"(\d+)°");
+
+    #endregion
+
+    public BlockHelper(IMyGridTerminalSystem gts, string debugBlockName = null)
     {
-        #region Members
+        _gts = gts;
 
-        private readonly IMyGridTerminalSystem _gts;
-        private readonly string _debugBlockName;
-        private readonly IMyTerminalBlock _debugBlock;
-        private readonly System.Text.RegularExpressions.Regex _infoPistionPosition = new System.Text.RegularExpressions.Regex(@"(\d+.\d+)m");
-        private readonly System.Text.RegularExpressions.Regex _infoRotorPosition = new System.Text.RegularExpressions.Regex(@"(\d+)°");
-
-        #endregion
-
-        public BlockHelper(IMyGridTerminalSystem gts, string debugBlockName = null)
+        if (!string.IsNullOrEmpty(debugBlockName))
         {
-            _gts = gts;
+            _debugBlockName = debugBlockName;
+            _debugBlock = gts.GetBlockWithName(debugBlockName);
+        }
+    }
 
-            if (!string.IsNullOrEmpty(debugBlockName))
-            {
-                _debugBlockName = debugBlockName;
-                _debugBlock = gts.GetBlockWithName(debugBlockName);
-            }
+    #region LINQ Functions
+
+    public void ForEach(IList<IMyTerminalBlock> blocks, Action<IMyTerminalBlock> action)
+    {
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            action.Invoke(blocks[i]);
+        }
+    }
+
+    public bool All(IList<IMyTerminalBlock> blocks, Func<IMyTerminalBlock, bool> predicate)
+    {
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            if (!predicate.Invoke(blocks[i]))
+                return false;
         }
 
-        #region LINQ Functions
+        return true;
+    }
 
-        public void ForEach(IList<IMyTerminalBlock> blocks, Action<IMyTerminalBlock> action)
+    public bool Any(IList<IMyTerminalBlock> blocks, Func<IMyTerminalBlock, bool> predicate)
+    {
+        for (int i = 0; i < blocks.Count; i++)
         {
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                action.Invoke(blocks[i]);
-            }
+            if (predicate.Invoke(blocks[i]))
+                return true;
         }
 
-        public bool All(IList<IMyTerminalBlock> blocks, Func<IMyTerminalBlock, bool> predicate)
-        {
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                if (!predicate.Invoke(blocks[i]))
-                    return false;
-            }
+        return false;
+    }
 
-            return true;
+    public IList<IMyTerminalBlock> Where(IList<IMyTerminalBlock> blocks, Func<IMyTerminalBlock, bool> predicate)
+    {
+        var result = new List<IMyTerminalBlock>();
+
+        for (int i = 0; i < blocks.Count; i++)
+        {
+            if (predicate.Invoke(blocks[i]))
+                result.Add(blocks[i]);
         }
 
-        public bool Any(IList<IMyTerminalBlock> blocks, Func<IMyTerminalBlock, bool> predicate)
-        {
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                if (predicate.Invoke(blocks[i]))
-                    return true;
-            }
+        return result;
+    }
 
-            return false;
+    #endregion
+
+    #region Debug
+
+    public void Debug(string text)
+    {
+        Debug(text, null);
+    }
+
+    public void DebugClear()
+    {
+        if (_debugBlock != null)
+        {
+            _debugBlock.SetCustomName(_debugBlockName);
         }
+    }
 
-        public IList<IMyTerminalBlock> Where(IList<IMyTerminalBlock> blocks, Func<IMyTerminalBlock, bool> predicate)
-        {
-            var result = new List<IMyTerminalBlock>();
-
-            for (int i = 0; i < blocks.Count; i++)
-            {
-                if (predicate.Invoke(blocks[i]))
-                    result.Add(blocks[i]);
-            }
-
-            return result;
-        }
-
-        #endregion
-
-        #region Debug
-
-        public void Debug(string text)
-        {
-            Debug(text, null);
-        }
-
-        public void DebugClear()
-        {
-            if (_debugBlock != null)
-            {
-                _debugBlock.SetCustomName(_debugBlockName);
-            }
-        }
-
-        public void Debug(string text, params object[] args)
-        {
-            if (_debugBlock == null)
-                throw new Exception("Deubg block was not found! You have to specifiy the debug block name when you initialize the block helper");
+    public void Debug(string text, params object[] args)
+    {
+        if (_debugBlock == null)
+            throw new Exception("Deubg block was not found! You have to specifiy the debug block name when you initialize the block helper");
             
-            _debugBlock.SetCustomName(_debugBlock.CustomName + "\n\r" + string.Format(text, args));
-        }
+        _debugBlock.SetCustomName(_debugBlock.CustomName + "\n\r" + string.Format(text, args));
+    }
 
-        #endregion
+    #endregion
 
-        #region Block Finding (Find..)
+    #region Block Finding (Find..)
 
-        public IList<IMyTerminalBlock> FindBlocksOfName(string name, Func<IMyTerminalBlock, bool> predicate = null)
-        {
-            var list = new List<IMyTerminalBlock>();
-            _gts.SearchBlocksOfName(name, list, predicate);
-            return list;
-        }
+    public IList<IMyTerminalBlock> FindBlocksOfName(string name, Func<IMyTerminalBlock, bool> predicate = null)
+    {
+        var list = new List<IMyTerminalBlock>();
+        _gts.SearchBlocksOfName(name, list, predicate);
+        return list;
+    }
 
-        public IList<IMyTerminalBlock> FindBlocksOfType<T>(Func<IMyTerminalBlock, bool> predicate = null)
-        {
-            var list = new List<IMyTerminalBlock>();
-            _gts.GetBlocksOfType<T>(list, predicate);
-            return list;
-        }
+    public IList<IMyTerminalBlock> FindBlocksOfType<T>(Func<IMyTerminalBlock, bool> predicate = null)
+    {
+        var list = new List<IMyTerminalBlock>();
+        _gts.GetBlocksOfType<T>(list, predicate);
+        return list;
+    }
 
-        #endregion
+    #endregion
 
-        #region Block Actions (Do..)
+    #region Block Actions (Do..)
 
-        public void DoAction(IMyTerminalBlock block, string action)
-        {
-            var terminalAction = block.GetActionWithName(action);
+    public void DoAction(IMyTerminalBlock block, string action)
+    {
+        var terminalAction = block.GetActionWithName(action);
 
-            if (terminalAction == null)
-                throw new Exception(string.Format("Block '{0}' has no action '{1}", block.CustomName, action));
+        if (terminalAction == null)
+            throw new Exception(string.Format("Block '{0}' has no action '{1}", block.CustomName, action));
 
-            terminalAction.Apply(block);
-        }
+        terminalAction.Apply(block);
+    }
 
-        public void DoTurnOn(IMyTerminalBlock block)
-        {
-            DoAction(block, "OnOff_On");
-        }
+    public void DoTurnOn(IMyTerminalBlock block)
+    {
+        DoAction(block, "OnOff_On");
+    }
 
-        public void DoTurnOff(IMyTerminalBlock block)
-        {
-            DoAction(block, "OnOff_Off");
-        }
+    public void DoTurnOff(IMyTerminalBlock block)
+    {
+        DoAction(block, "OnOff_Off");
+    }
 
-        public void DoToggleOnOff(IMyTerminalBlock block)
-        {
-            DoAction(block, "OnOff");
-        }
+    public void DoToggleOnOff(IMyTerminalBlock block)
+    {
+        DoAction(block, "OnOff");
+    }
 
-        public void DoReverse(IMyTerminalBlock block)
-        {
-            DoAction(block, "Reverse");
-        }
+    public void DoReverse(IMyTerminalBlock block)
+    {
+        DoAction(block, "Reverse");
+    }
 
-        #endregion
+    #endregion
 
-        #region Block Conditions (Is..)
+    #region Block Conditions (Is..)
 
-        public bool IsWorking(IMyTerminalBlock block)
-        {
-            return block.IsWorking;
-        }
+    public bool IsWorking(IMyTerminalBlock block)
+    {
+        return block.IsWorking;
+    }
 
-        public bool IsNotWorking(IMyTerminalBlock block)
-        {
-            return !block.IsWorking;
-        }
+    public bool IsNotWorking(IMyTerminalBlock block)
+    {
+        return !block.IsWorking;
+    }
 
-        public bool IsFunctional(IMyTerminalBlock block)
-        {
-            return block.IsFunctional;
-        }
+    public bool IsFunctional(IMyTerminalBlock block)
+    {
+        return block.IsFunctional;
+    }
 
-        public bool IsNotFunctional(IMyTerminalBlock block)
-        {
-            return !block.IsFunctional;
-        }
+    public bool IsNotFunctional(IMyTerminalBlock block)
+    {
+        return !block.IsFunctional;
+    }
 
-        public bool IsBeingHacked(IMyTerminalBlock block)
-        {
-            return block.IsBeingHacked;
-        }
+    public bool IsBeingHacked(IMyTerminalBlock block)
+    {
+        return block.IsBeingHacked;
+    }
 
-        #region Piston
+    #region Piston
 
-        public bool IsPiston(IMyTerminalBlock block)
-        {
-            return (block is IMyPistonBase);
-        }
+    public bool IsPiston(IMyTerminalBlock block)
+    {
+        return (block is IMyPistonBase);
+    }
 
-        public bool IsPistonExpanded(IMyTerminalBlock block)
-        {
-            var piston = AsPiston(block);
+    public bool IsPistonExpanded(IMyTerminalBlock block)
+    {
+        var piston = AsPiston(block);
 
-            return (Math.Round(piston.MaxLimit, 1).ToString() == GetPistonPosition(block).ToString());
-        }
+        return (Math.Round(piston.MaxLimit, 1).ToString() == GetPistonPosition(block).ToString());
+    }
 
-        public bool IsPistonContracted(IMyTerminalBlock block)
-        {
-            var piston = AsPiston(block);
+    public bool IsPistonContracted(IMyTerminalBlock block)
+    {
+        var piston = AsPiston(block);
 
-            return (Math.Round(piston.MinLimit, 1).ToString() == GetPistonPosition(block).ToString());
-        }
+        return (Math.Round(piston.MinLimit, 1).ToString() == GetPistonPosition(block).ToString());
+    }
 
-        #endregion
+    #endregion
 
-        #region Sensor
+    #region Sensor
 
-        public bool IsSensor(IMyTerminalBlock block)
-        {
-            return (block is IMySensorBlock);
-        }
+    public bool IsSensor(IMyTerminalBlock block)
+    {
+        return (block is IMySensorBlock);
+    }
 
-        public bool IsSensorActive(IMyTerminalBlock block)
-        {
-            var sensor = AsSensor(block);
+    public bool IsSensorActive(IMyTerminalBlock block)
+    {
+        var sensor = AsSensor(block);
 
-            return sensor.IsActive;
-        }
+        return sensor.IsActive;
+    }
 
-        #endregion
+    #endregion
 
-        #region Landing Gear
+    #region Landing Gear
 
-        public bool IsLandingGear(IMyTerminalBlock block)
-        {
-            return (block is IMyLandingGear);
-        }
+    public bool IsLandingGear(IMyTerminalBlock block)
+    {
+        return (block is IMyLandingGear);
+    }
 
-        public bool IsLandingGearLocked(IMyTerminalBlock block)
-        {
-            var gear = AsLandingGear(block);
+    public bool IsLandingGearLocked(IMyTerminalBlock block)
+    {
+        var gear = AsLandingGear(block);
 
-            return gear.DetailedInfo.Contains("Locked");
-        }
+        return gear.DetailedInfo.Contains("Locked");
+    }
 
-        public bool IsLandingGearUnlocked(IMyTerminalBlock block)
-        {
-            var gear = AsLandingGear(block);
+    public bool IsLandingGearUnlocked(IMyTerminalBlock block)
+    {
+        var gear = AsLandingGear(block);
 
-            return gear.DetailedInfo.Contains("Unlocked");
-        }
+        return gear.DetailedInfo.Contains("Unlocked");
+    }
 
-        public bool IsLandingGearReadyToLock(IMyTerminalBlock block)
-        {
-            var gear = AsLandingGear(block);
+    public bool IsLandingGearReadyToLock(IMyTerminalBlock block)
+    {
+        var gear = AsLandingGear(block);
 
-            return gear.DetailedInfo.Contains("Ready To Lock");
-        }
+        return gear.DetailedInfo.Contains("Ready To Lock");
+    }
 
-        #endregion
+    #endregion
 
 
-        #endregion
+    #endregion
 
-        #region Block Properties (Get..)
+    #region Block Properties (Get..)
 
-        public float? GetPistonPosition(IMyTerminalBlock block)
-        {
-            return TryExtractFloat(block.DetailedInfo, _infoPistionPosition);
-        }
+    public float? GetPistonPosition(IMyTerminalBlock block)
+    {
+        return TryExtractFloat(block.DetailedInfo, _infoPistionPosition);
+    }
 
-        public float? GetRotorPosition(IMyTerminalBlock block)
-        {
-            return TryExtractFloat(block.DetailedInfo, _infoRotorPosition);
-        }
+    public float? GetRotorPosition(IMyTerminalBlock block)
+    {
+        return TryExtractFloat(block.DetailedInfo, _infoRotorPosition);
+    }
 
-        #endregion
+    #endregion
 
-        #region Block Cast (As..)
+    #region Block Cast (As..)
 
-        public IMySensorBlock AsSensor(IMyTerminalBlock block)
-        {
-            var target = block as IMySensorBlock;
+    public IMySensorBlock AsSensor(IMyTerminalBlock block)
+    {
+        var target = block as IMySensorBlock;
 
-            if (target == null)
-                throw new Exception(string.Format("Block '{0}' is no 'Sensor'", block.CustomName));
+        if (target == null)
+            throw new Exception(string.Format("Block '{0}' is no 'Sensor'", block.CustomName));
 
-            return target;
-        }
+        return target;
+    }
 
-        public IMyPistonBase AsPiston(IMyTerminalBlock block)
-        {
-            var target = block as IMyPistonBase;
+    public IMyPistonBase AsPiston(IMyTerminalBlock block)
+    {
+        var target = block as IMyPistonBase;
 
-            if (target == null)
-                throw new Exception(string.Format("Block '{0}' is no 'Piston'", block.CustomName));
+        if (target == null)
+            throw new Exception(string.Format("Block '{0}' is no 'Piston'", block.CustomName));
 
-            return target;
-        }
+        return target;
+    }
 
-        public IMyLandingGear AsLandingGear(IMyTerminalBlock block)
-        {
-            var target = block as IMyLandingGear;
+    public IMyLandingGear AsLandingGear(IMyTerminalBlock block)
+    {
+        var target = block as IMyLandingGear;
 
-            if (target == null)
-                throw new Exception(string.Format("Block '{0}' is no 'Landing Gear'", block.CustomName));
+        if (target == null)
+            throw new Exception(string.Format("Block '{0}' is no 'Landing Gear'", block.CustomName));
 
-            return target;
-        }
+        return target;
+    }
 
-        private IMyMotorStator AsMotorStator(IMyTerminalBlock block)
-        {
-            var target = block as IMyMotorStator;
+    public IMyMotorStator AsMotorStator(IMyTerminalBlock block)
+    {
+        var target = block as IMyMotorStator;
 
-            if (target == null)
-                throw new Exception(string.Format("Block '{0}' is no 'Motor Stator'", block.CustomName));
+        if (target == null)
+            throw new Exception(string.Format("Block '{0}' is no 'Motor Stator'", block.CustomName));
 
-            return target;
-        }
+        return target;
+    }
 
-        #endregion
+    #endregion
 
-        #region Internal
+    #region Internal
 
-        private float? TryExtractFloat(string value, System.Text.RegularExpressions.Regex expression)
-        {
-            var matches = expression.Match(value);
+    private float? TryExtractFloat(string value, System.Text.RegularExpressions.Regex expression)
+    {
+        var matches = expression.Match(value);
 
-            if (!matches.Groups[1].Success)
-                return null;
+        if (!matches.Groups[1].Success)
+            return null;
 
-            return float.Parse(matches.Groups[1].Value);
-        }
+        return float.Parse(matches.Groups[1].Value);
+    }
 
-        #endregion
-    } 
-}
+    #endregion
+} 
+
