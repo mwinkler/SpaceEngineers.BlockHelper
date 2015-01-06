@@ -22,6 +22,7 @@ Some usage examples:
 ```csharp
     void Main()
     {
+        // pass the GridTerminalSystem to the helper class to use the Find..() methods
         BlockHelper.Init(GridTerminalSystem);
 
 
