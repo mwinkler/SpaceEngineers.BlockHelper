@@ -3,7 +3,7 @@ public class BlockHelper
 {
     #region Members
 
-    private static IMyGridTerminalSystem _gts;
+    private static IMyGridTerminalSystem _gridTerminalSystem;
     private static string _debugBlockName;
     private static IMyTerminalBlock _debugBlock;
     private static readonly System.Text.RegularExpressions.Regex _infoPistionPosition = new System.Text.RegularExpressions.Regex(@"(\d+.\d+)m");
@@ -15,12 +15,12 @@ public class BlockHelper
 
     public static void Init(IMyGridTerminalSystem gridTerminalSystem, string debugBlockName = null)
     {
-        _gts = gridTerminalSystem;
+        _gridTerminalSystem = gridTerminalSystem;
 
         if (!string.IsNullOrEmpty(debugBlockName))
         {
             _debugBlockName = debugBlockName;
-            _debugBlock = _gts.GetBlockWithName(debugBlockName);
+            _debugBlock = _gridTerminalSystem.GetBlockWithName(debugBlockName);
         }
     }
 
@@ -106,14 +106,14 @@ public class BlockHelper
     public static IList<IMyTerminalBlock> FindBlocksOfName(string name, Func<IMyTerminalBlock, bool> predicate = null)
     {
         var list = new List<IMyTerminalBlock>();
-        _gts.SearchBlocksOfName(name, list, predicate);
+        GridTerminalSystem.SearchBlocksOfName(name, list, predicate);
         return list;
     }
 
     public static IList<IMyTerminalBlock> FindBlocksOfType<T>(Func<IMyTerminalBlock, bool> predicate = null)
     {
         var list = new List<IMyTerminalBlock>();
-        _gts.GetBlocksOfType<T>(list, predicate);
+        GridTerminalSystem.GetBlocksOfType<T>(list, predicate);
         return list;
     }
 
@@ -328,6 +328,17 @@ public class BlockHelper
     #endregion
 
     #region Internal
+
+    private static IMyGridTerminalSystem GridTerminalSystem
+    {
+        get
+        {
+            if (_gridTerminalSystem == null)
+                throw new Exception("Please initzialize the GridHelper with 'GridHelper.Init(GridTerminalSystem);'");
+
+            return _gridTerminalSystem;
+        }
+    }
 
     private static float? TryExtractFloat(string value, System.Text.RegularExpressions.Regex expression)
     {
