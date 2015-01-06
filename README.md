@@ -19,7 +19,7 @@ And some LINQ like functions:
 - Where() : Filter blocks by condition
 
 Some usage examples:
-```
+```csharp
     void Main()
     {
         var block = new BlockHelper(GridTerminalSystem);
@@ -71,7 +71,7 @@ Some usage examples:
 
 At the moment only a few properties, conditions and methods are implemented:
 
-```
+```csharp
 All(IList<IMyTerminalBlock>, Func<IMyTerminalBlock,bool>): bool 
 Any(IList<IMyTerminalBlock>, Func<IMyTerminalBlock,bool>): bool 
 ForEach(IList<IMyTerminalBlock>, Action<IMyTerminalBlock>) 
