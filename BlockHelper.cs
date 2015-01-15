@@ -253,6 +253,13 @@ public static class BlockHelper
 
     #region Block Properties (Get..)
 
+    public static IList<ITerminalProperty> GetProperties(this IMyTerminalBlock block, Func<ITerminalProperty, bool> predicate = null)
+    {
+        var list = new List<ITerminalProperty>();
+        block.GetProperties(list, predicate);
+        return list;
+    }
+
     public static float? GetPistonPosition(this IMyTerminalBlock block)
     {
         return TryExtractFloat(block.DetailedInfo, @"(\d+.\d+)m");
@@ -303,6 +310,16 @@ public static class BlockHelper
 
         if (target == null)
             throw new Exception(string.Format("Block '{0}' is no 'Motor Stator'", block.CustomName));
+
+        return target;
+    }
+
+    public static IMyLightingBlock AsLightingBlock(this IMyTerminalBlock block)
+    {
+        var target = block as IMyLightingBlock;
+
+        if (target == null)
+            throw new Exception(string.Format("Block '{0}' is no 'Lighting Block'", block.CustomName));
 
         return target;
     }

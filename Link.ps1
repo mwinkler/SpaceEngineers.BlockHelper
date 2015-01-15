@@ -31,7 +31,8 @@
 
 
 
-$path = "SpaceEngineers.BlockHelper\"
+#$path = "SpaceEngineers.BlockHelper\"
+$path = ""
 
 # read source file
 $source = $path + "BlockHelper.cs"

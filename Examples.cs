@@ -1,15 +1,18 @@
-﻿using Sandbox.ModAPI.Ingame;
-using System;
+﻿using System;
 using System.Collections.Generic;
-
+using Sandbox.ModAPI.Ingame;
+using Sandbox.ModAPI.Interfaces;
+using Sandbox.Common.ObjectBuilders;
+using VRageMath;
 
 class Examples
 {
     IMyGridTerminalSystem GridTerminalSystem;
+    string Storage;
 
     void Main()
     {
-        var debug = GridTerminalSystem.GetBlockWithName("Debug:");
+        var debug = GridTerminalSystem.FindBlocksOfName("Debug")[0];
 
         // get all lights
         var lights = GridTerminalSystem.FindBlocksOfType<IMyLightingBlock>();
@@ -48,8 +51,21 @@ class Examples
         var hackingBlocks = GridTerminalSystem.Blocks.Where(BlockHelper.IsBeingHacked);
 
 
+        //
+        var light = lights[0];
+        var properties = piston.GetProperties();
+        var output = "";
 
-        // get piston position
+        for (int i = 0; i < properties.Count; i++)
+        {
+            var property = properties[i];
+            output += string.Format("{0}:{1}; ", property.Id, property.TypeName);
+        }
+
+        var color = light.GetProperty("Color").AsColor().GetValue(light);
+
+        debug.SetCustomName(string.Format("Debug: {0} {1}", output, color));
+        
     }
 }
 
