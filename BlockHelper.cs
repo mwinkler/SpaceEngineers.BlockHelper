@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Sandbox.ModAPI.Ingame;
 using Sandbox.ModAPI.Interfaces;
-using Sandbox.Common.ObjectBuilders;
 
 public static class BlockHelper
 {
@@ -50,34 +49,6 @@ public static class BlockHelper
 
         return result;
     }
-
-    #endregion
-
-    #region Debug
-
-    //public static void Debug(string text)
-    //{
-    //    if (_debugBlock == null)
-    //        throw new Exception("Deubg block was not found! You have to specifiy the debug block name when you initialize the block helper");
-
-    //    _debugBlock.SetCustomName(_debugBlock.CustomName + "\n\r" + text);
-    //}
-
-    //public static void DebugClear()
-    //{
-    //    if (_debugBlock != null)
-    //    {
-    //        _debugBlock.SetCustomName(_debugBlockName);
-    //    }
-    //}
-
-    //public static void Debug(string text, params object[] args)
-    //{
-    //    if (_debugBlock == null)
-    //        throw new Exception("Deubg block was not found! You have to specifiy the debug block name when you initialize the block helper");
-
-    //    _debugBlock.SetCustomName(_debugBlock.CustomName + "\n\r" + string.Format(text, args));
-    //}
 
     #endregion
 

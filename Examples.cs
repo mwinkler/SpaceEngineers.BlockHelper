@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using Sandbox.ModAPI.Ingame;
 using Sandbox.ModAPI.Interfaces;
-using Sandbox.Common.ObjectBuilders;
 using VRageMath;
 
 class Examples
@@ -48,7 +47,7 @@ class Examples
 
 
         // get all being hacked blocks
-        var hackingBlocks = GridTerminalSystem.Blocks.Where(BlockHelper.IsBeingHacked);
+        //var hackingBlocks = GridTerminalSystem.block.Blocks.Where(BlockHelper.IsBeingHacked);
 
 
         //
